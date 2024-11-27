@@ -13,6 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -44,6 +46,9 @@ fun DraggableComponent() {
     var dragging by remember { mutableStateOf(false) }
     var horizontalDragEnabled by remember { mutableStateOf(true) }
 
+    // Detect the current layout direction
+    val layoutDirection = LocalLayoutDirection.current
+
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -55,10 +60,7 @@ fun DraggableComponent() {
         Box(
             modifier = Modifier
                 .offset(x = animatedHorizontalDragOffsetX)
-                .size(
-                    width = horizontalDragComponentWidth,
-                    height = horizontalDragComponentHeight
-                )
+                .size(width = horizontalDragComponentWidth, height = horizontalDragComponentHeight)
                 .background(
                     color = Color.Black.copy(alpha = 0.7f),
                     shape = RoundedCornerShape(8.dp)
@@ -100,22 +102,18 @@ fun DraggableComponent() {
                         },
                         onDragEnd = {
                             dragging = false
-                            horizontalDragEnabled =
-                                true // Re-enable horizontal dragging after drag ends
+                            horizontalDragEnabled = true // Re-enable horizontal dragging after drag ends
                         }
                     ) { change, dragAmount ->
                         // Determine drag direction
-                        if (horizontalDragEnabled && kotlin.math.abs(dragAmount.y) > kotlin.math.abs(
-                                dragAmount.x
-                            )
-                        ) {
-                            horizontalDragEnabled =
-                                false // Disable horizontal dragging when vertical drag starts
+                        if (horizontalDragEnabled && kotlin.math.abs(dragAmount.y) > kotlin.math.abs(dragAmount.x)) {
+                            horizontalDragEnabled = false // Disable horizontal dragging when vertical drag starts
                         }
 
                         if (horizontalDragEnabled) {
-                            // Handle horizontal dragging
-                            val newHorizontalOffset = horizontalDragOffsetX + dragAmount.x.dp
+                            // Handle horizontal dragging with RTL adjustment
+                            val dragDeltaX = if (layoutDirection == LayoutDirection.Rtl) -dragAmount.x.dp else dragAmount.x.dp
+                            val newHorizontalOffset = horizontalDragOffsetX + dragDeltaX
                             horizontalDragOffsetX = when {
                                 newHorizontalOffset > screenWidth - horizontalDragComponentWidth -> {
                                     (screenWidth - horizontalDragComponentWidth) +
