@@ -102,17 +102,23 @@ fun DraggableComponent() {
                         },
                         onDragEnd = {
                             dragging = false
-                            horizontalDragEnabled = true // Re-enable horizontal dragging after drag ends
+                            horizontalDragEnabled =
+                                true // Re-enable horizontal dragging after drag ends
                         }
                     ) { change, dragAmount ->
                         // Determine drag direction
-                        if (horizontalDragEnabled && kotlin.math.abs(dragAmount.y) > kotlin.math.abs(dragAmount.x)) {
-                            horizontalDragEnabled = false // Disable horizontal dragging when vertical drag starts
+                        if (horizontalDragEnabled && kotlin.math.abs(dragAmount.y) > kotlin.math.abs(
+                                dragAmount.x
+                            )
+                        ) {
+                            horizontalDragEnabled =
+                                false // Disable horizontal dragging when vertical drag starts
                         }
 
                         if (horizontalDragEnabled) {
                             // Handle horizontal dragging with RTL adjustment
-                            val dragDeltaX = if (layoutDirection == LayoutDirection.Rtl) -dragAmount.x.dp else dragAmount.x.dp
+                            val dragDeltaX =
+                                if (layoutDirection == LayoutDirection.Rtl) -dragAmount.x.dp else dragAmount.x.dp
                             val newHorizontalOffset = horizontalDragOffsetX + dragDeltaX
                             horizontalDragOffsetX = when {
                                 newHorizontalOffset > screenWidth - horizontalDragComponentWidth -> {
@@ -129,7 +135,7 @@ fun DraggableComponent() {
                         }
 
                         // Handle vertical dragging
-                        val newVerticalOffset = verticalDragOffsetY + dragAmount.y.dp
+                        val newVerticalOffset = verticalDragOffsetY + (dragAmount.y.dp / 3)
                         verticalDragOffsetY = newVerticalOffset.coerceIn(
                             16.dp,
                             (horizontalDragComponentHeight - verticalDragComponentHeight) - 16.dp
